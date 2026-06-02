@@ -163,18 +163,33 @@
       gap: 14px;
       padding: 16px 28px;
     }
-    #sec-observe .card { margin-bottom: 0; padding: 18px 24px; }
-    #sec-observe .card-title { font-size: 1.25rem; margin-bottom: 14px; }
+    /* 上排（學習目標）佔 55%，下排佔 45% */
     #sec-observe .obs-top {
-      flex-shrink: 0;
+      flex: 1.2;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #sec-observe .obs-top > .card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+      padding: 18px 24px;
     }
     #sec-observe .obs-top .obj-grid {
+      flex: 1;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 14px;
+      align-items: stretch;
     }
     #sec-observe .obs-top .obj-item {
-      padding: 16px 10px;
-      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      font-size: 1.05rem;
     }
     #sec-observe .obs-bottom {
       flex: 1;
@@ -182,11 +197,19 @@
       gap: 14px;
       min-height: 0;
     }
-    #sec-observe .obs-bottom .card { flex: 1; overflow: hidden; }
-    #sec-observe .obs-bottom .vocab-list { gap: 10px; margin-top: 10px; }
-    #sec-observe .obs-bottom .vocab-chip { font-size: 1rem; padding: 8px 16px; }
-    #sec-observe .obs-bottom .badge { font-size: 1rem; padding: 6px 16px; }
-    #sec-observe .obs-bottom .info-row { font-size: 0.95rem; margin-top: 16px; }
+    #sec-observe .obs-bottom > .card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin-bottom: 0;
+      padding: 18px 24px;
+    }
+    #sec-observe .card-title { font-size: 1.25rem; margin-bottom: 14px; }
+    #sec-observe .obs-bottom .vocab-list { gap: 10px; margin-top: 4px; }
+    #sec-observe .obs-bottom .vocab-chip { font-size: 1.05rem; padding: 9px 18px; }
+    #sec-observe .obs-bottom .badge { font-size: 1.05rem; padding: 7px 18px; }
+    #sec-observe .obs-bottom .info-row { font-size: 1rem; margin-top: 18px; line-height: 1.6; }
 
     /* ── Vocab chips ── */
     .vocab-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -542,19 +565,19 @@
     <div class="card-title">🎯 學習目標</div>
     <div class="obj-grid">
       <div class="obj-item">
-        <canvas id="objAnim1" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
+        <canvas id="objAnim1" width="150" height="95" style="display:block;margin:0 auto 10px;max-width:100%;"></canvas>
         了解<strong>力的大小</strong>對物體移動方向的影響
       </div>
       <div class="obj-item">
-        <canvas id="objAnim2" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
+        <canvas id="objAnim2" width="150" height="95" style="display:block;margin:0 auto 10px;max-width:100%;"></canvas>
         知道兩端力相等時物體不會移動（<strong>力的平衡</strong>）
       </div>
       <div class="obj-item">
-        <canvas id="objAnim3" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
+        <canvas id="objAnim3" width="150" height="95" style="display:block;margin:0 auto 10px;max-width:100%;"></canvas>
         知道力不相等時，物體往<strong>較大力</strong>的方向移動
       </div>
       <div class="obj-item">
-        <canvas id="objAnim4" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
+        <canvas id="objAnim4" width="150" height="95" style="display:block;margin:0 auto 10px;max-width:100%;"></canvas>
         了解三個力的<strong>合力</strong>決定物體移動方向
       </div>
     </div>
