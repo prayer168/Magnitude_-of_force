@@ -34,6 +34,7 @@
       color: var(--text);
       line-height: 1.65;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     /* ── Header ── */
@@ -342,23 +343,48 @@
     /* ── Summary diagram (SVG inline) ── */
     .summary-svg { width: 100%; max-width: 500px; margin: 0 auto; display: block; }
 
-    /* ── Life applications ── */
-    .life-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-    }
+    /* ── Exp2 flex layout ── */
+    .exp2-layout { display:flex; gap:16px; align-items:flex-start; }
+    .exp2-controls { flex:0 0 220px; min-width:160px; }
+    .exp2-canvas-wrap { flex:1; min-width:0; }
 
-    .life-card {
-      background: white;
-      border: 1px solid var(--border);
+    /* ── Principle card canvases ── */
+    .p-canvas { width:100%; display:block; border-radius:8px; margin-top:10px; }
+
+    /* ── Life tabs layout ── */
+    .life-layout {
+      display:flex;
+      height: clamp(340px, calc(100vh - 220px), 500px);
+      overflow: hidden;
       border-radius: 10px;
-      padding: 18px 14px;
-      text-align: center;
     }
-    .life-card .life-icon { font-size: 2.4rem; margin-bottom: 8px; }
-    .life-card h4 { font-size: 0.95rem; margin-bottom: 6px; color: var(--primary); }
-    .life-card p { font-size: 0.83rem; color: var(--muted); }
+    .life-tab-list {
+      display:flex; flex-direction:column; gap:2px; padding:8px 6px;
+      background:#f0f4f8; border-right:1px solid var(--border);
+      min-width:96px; flex-shrink:0; overflow-y:auto;
+      border-radius:10px 0 0 10px;
+    }
+    .life-tab-btn {
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      padding:8px 6px; border:none; border-radius:8px; background:transparent;
+      cursor:pointer; font-family:inherit; font-size:0.78rem; color:var(--muted);
+      transition:all 0.18s; text-align:center; line-height:1.2; width:100%;
+    }
+    .life-tab-btn .ltab-icon { font-size:1.5rem; }
+    .life-tab-btn:hover { background:var(--primary-light); color:var(--primary); }
+    .life-tab-btn.active { background:var(--primary); color:white; font-weight:600; }
+    .life-content-area {
+      flex:1; display:flex; flex-direction:column; padding:14px 16px;
+      background:white; min-width:0; overflow:hidden;
+      border-radius:0 10px 10px 0;
+    }
+    .life-content-title { font-size:1.1rem; font-weight:700; color:var(--primary); margin-bottom:6px; }
+    .life-content-desc { font-size:0.92rem; color:var(--text); margin-bottom:10px; line-height:1.6; }
+    .life-anim-box {
+      flex:1; background:#f0f4f8; border-radius:8px;
+      display:flex; align-items:center; justify-content:center; overflow:hidden; min-height:0;
+    }
+    .life-anim-box canvas { max-width:100%; max-height:100%; }
 
     /* ── Quiz ── */
     .quiz-q {
@@ -589,84 +615,76 @@
       <div class="card-title">🧪 實驗二：三個彈簧秤的平衡</div>
       <p class="text-muted">將金屬圓環放在量角器中央，三個彈簧秤從不同角度拉住圓環。調整各彈簧秤的力道與角度，觀察圓環的移動方向。</p>
 
-      <div class="canvas-box" style="margin-top:14px;">
-        <canvas id="canvas2" width="500" height="500"></canvas>
-      </div>
-
-      <div style="display:grid;gap:12px;margin-bottom:14px;">
-        <div class="controls-grid">
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span>🔵 彈簧秤 1 力道</span>
-              <span class="ctrl-val" id="lbl-f2-1">200 g</span>
+      <div class="exp2-layout" style="margin-top:14px;">
+        <div class="exp2-controls">
+          <div style="display:grid;gap:10px;margin-bottom:12px;">
+            <div>
+              <div class="ctrl-label" style="margin-bottom:4px;">
+                <span>🔵 彈簧秤 1 力道</span>
+                <span class="ctrl-val" id="lbl-f2-1">200 g</span>
+              </div>
+              <input type="range" id="s2-f1" min="50" max="300" value="200" step="10" oninput="updateExp2()">
+              <div class="ctrl-label" style="margin-top:6px;margin-bottom:4px;">
+                <span>🔵 角度</span>
+                <span class="ctrl-val" id="lbl-a1">0°</span>
+              </div>
+              <input type="range" id="s2-a1" min="0" max="359" value="0" step="5" oninput="updateExp2()">
             </div>
-            <input type="range" id="s2-f1" min="50" max="300" value="200" step="10" oninput="updateExp2()">
+            <div>
+              <div class="ctrl-label" style="margin-bottom:4px;">
+                <span>🟢 彈簧秤 2 力道</span>
+                <span class="ctrl-val" id="lbl-f2-2">200 g</span>
+              </div>
+              <input type="range" id="s2-f2" min="50" max="300" value="200" step="10" oninput="updateExp2()">
+              <div class="ctrl-label" style="margin-top:6px;margin-bottom:4px;">
+                <span>🟢 角度</span>
+                <span class="ctrl-val" id="lbl-a2">120°</span>
+              </div>
+              <input type="range" id="s2-a2" min="0" max="359" value="120" step="5" oninput="updateExp2()">
+            </div>
+            <div>
+              <div class="ctrl-label" style="margin-bottom:4px;">
+                <span>🔴 彈簧秤 3 力道</span>
+                <span class="ctrl-val" id="lbl-f2-3">200 g</span>
+              </div>
+              <input type="range" id="s2-f3" min="50" max="300" value="200" step="10" oninput="updateExp2()">
+              <div class="ctrl-label" style="margin-top:6px;margin-bottom:4px;">
+                <span>🔴 角度</span>
+                <span class="ctrl-val" id="lbl-a3">240°</span>
+              </div>
+              <input type="range" id="s2-a3" min="0" max="359" value="240" step="5" oninput="updateExp2()">
+            </div>
           </div>
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span>🔵 彈簧秤 1 角度</span>
-              <span class="ctrl-val" id="lbl-a1">0°</span>
+
+          <p class="text-muted" style="font-size:0.82rem;margin-bottom:5px;">📋 快速場景：</p>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;">
+            <button class="btn btn-outline btn-sm" onclick="setScene2(1)">場景1：三力均等</button>
+            <button class="btn btn-outline btn-sm" onclick="setScene2(2)">場景2：1號較弱</button>
+            <button class="btn btn-outline btn-sm" onclick="setScene2(3)">場景3：角度不等</button>
+          </div>
+
+          <div class="pred-area">
+            <p>🤔 放開圓環後…</p>
+            <div class="pred-btns" id="pred2-btns">
+              <button class="pred-btn" onclick="setPred2('move')">移動</button>
+              <button class="pred-btn" onclick="setPred2('none')">幾乎不動</button>
             </div>
-            <input type="range" id="s2-a1" min="0" max="359" value="0" step="5" oninput="updateExp2()">
+          </div>
+
+          <div class="btn-group" style="margin-top:10px;">
+            <button class="btn btn-primary btn-sm" onclick="startExp2()">▶ 開始</button>
+            <button class="btn btn-outline btn-sm" onclick="resetExp2()">↺ 重設</button>
+          </div>
+
+          <div class="result-box" id="result2"></div>
+        </div>
+
+        <div class="exp2-canvas-wrap">
+          <div class="canvas-box">
+            <canvas id="canvas2" width="500" height="500"></canvas>
           </div>
         </div>
-        <div class="controls-grid">
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span>🟢 彈簧秤 2 力道</span>
-              <span class="ctrl-val" id="lbl-f2-2">200 g</span>
-            </div>
-            <input type="range" id="s2-f2" min="50" max="300" value="200" step="10" oninput="updateExp2()">
-          </div>
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span>🟢 彈簧秤 2 角度</span>
-              <span class="ctrl-val" id="lbl-a2">120°</span>
-            </div>
-            <input type="range" id="s2-a2" min="0" max="359" value="120" step="5" oninput="updateExp2()">
-          </div>
-        </div>
-        <div class="controls-grid">
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span>🔴 彈簧秤 3 力道</span>
-              <span class="ctrl-val" id="lbl-f2-3">200 g</span>
-            </div>
-            <input type="range" id="s2-f3" min="50" max="300" value="200" step="10" oninput="updateExp2()">
-          </div>
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span>🔴 彈簧秤 3 角度</span>
-              <span class="ctrl-val" id="lbl-a3">240°</span>
-            </div>
-            <input type="range" id="s2-a3" min="0" max="359" value="240" step="5" oninput="updateExp2()">
-          </div>
-        </div>
       </div>
-
-      <div style="margin-bottom:10px;">
-        <p class="text-muted" style="font-size:0.85rem;margin-bottom:6px;">📋 快速場景：</p>
-        <div class="btn-group">
-          <button class="btn btn-outline btn-sm" onclick="setScene2(1)">場景1：三力均等</button>
-          <button class="btn btn-outline btn-sm" onclick="setScene2(2)">場景2：1號較弱</button>
-          <button class="btn btn-outline btn-sm" onclick="setScene2(3)">場景3：角度不等</button>
-        </div>
-      </div>
-
-      <div class="pred-area">
-        <p>🤔 你的預測：放開金屬圓環後，它會…</p>
-        <div class="pred-btns" id="pred2-btns">
-          <button class="pred-btn" onclick="setPred2('move')">移動</button>
-          <button class="pred-btn" onclick="setPred2('none')">幾乎不動</button>
-        </div>
-      </div>
-
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="startExp2()">▶ 開始觀察</button>
-        <button class="btn btn-outline" onclick="resetExp2()">↺ 重設</button>
-      </div>
-
-      <div class="result-box" id="result2"></div>
     </div>
   </div>
 
@@ -684,6 +702,7 @@
       <div class="formula-box">
         F₁ = F₂ &nbsp;→&nbsp; 物體靜止不動（力的平衡）
       </div>
+      <canvas id="pAnim1" class="p-canvas" width="600" height="110"></canvas>
     </div>
 
     <div class="principle-card p-orange" style="margin-top:12px;">
@@ -692,6 +711,7 @@
       <div class="formula-box">
         F₁ &gt; F₂ &nbsp;→&nbsp; 物體往 F₁ 方向移動
       </div>
+      <canvas id="pAnim2" class="p-canvas" width="600" height="110"></canvas>
     </div>
 
     <div class="principle-card p-green" style="margin-top:12px;">
@@ -702,6 +722,7 @@
         <li>若合力 ≠ 0，物體往<strong>合力方向</strong>移動</li>
         <li>三力均等且角度間隔 120°，合力 = 0 → 平衡</li>
       </ul>
+      <canvas id="pAnim3" class="p-canvas" width="600" height="160"></canvas>
     </div>
   </div>
 
@@ -819,40 +840,22 @@
 <!-- ══════════════════════ 生活應用 ══════════════════════ -->
 <section id="sec-life" class="section">
 
-  <div class="card">
-    <div class="card-title">🌍 生活中的力平衡</div>
-    <p class="text-muted">力的平衡在生活中隨處可見！看看下面的例子：</p>
-
-    <div class="life-grid" style="margin-top:14px;">
-      <div class="life-card">
-        <div class="life-icon">🏋️</div>
-        <h4>拔河比賽</h4>
-        <p>兩隊拉力相等時繩子不動，力大的一方會把繩子拉向自己這側。</p>
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:18px;">
+    <div class="life-layout">
+      <div class="life-tab-list">
+        <button class="life-tab-btn active" onclick="showLife(0)"><span class="ltab-icon">🏋️</span>拔河比賽</button>
+        <button class="life-tab-btn" onclick="showLife(1)"><span class="ltab-icon">🌉</span>吊橋纜線</button>
+        <button class="life-tab-btn" onclick="showLife(2)"><span class="ltab-icon">🛍️</span>雙手提袋</button>
+        <button class="life-tab-btn" onclick="showLife(3)"><span class="ltab-icon">🖼️</span>吊掛畫框</button>
+        <button class="life-tab-btn" onclick="showLife(4)"><span class="ltab-icon">🤸</span>平衡木</button>
+        <button class="life-tab-btn" onclick="showLife(5)"><span class="ltab-icon">🔩</span>螺絲固定</button>
       </div>
-      <div class="life-card">
-        <div class="life-icon">🌉</div>
-        <h4>吊橋纜線</h4>
-        <p>橋面由多條纜線均等支撐，合力向上的分力等於橋的重力，維持平衡。</p>
-      </div>
-      <div class="life-card">
-        <div class="life-icon">🛍️</div>
-        <h4>雙手提袋</h4>
-        <p>兩手均等分擔重量時感覺最輕鬆；一手較用力時另一手感覺較輕。</p>
-      </div>
-      <div class="life-card">
-        <div class="life-icon">🖼️</div>
-        <h4>吊掛畫框</h4>
-        <p>兩條鋼線均等地吊掛畫框，畫框不偏斜；一條較短則畫框傾斜。</p>
-      </div>
-      <div class="life-card">
-        <div class="life-icon">🤸</div>
-        <h4>體操平衡木</h4>
-        <p>選手伸展雙臂是為了讓身體重心的合力維持在平衡木上方，保持平衡。</p>
-      </div>
-      <div class="life-card">
-        <div class="life-icon">🔩</div>
-        <h4>螺絲起子</h4>
-        <p>多支螺絲固定物件時，每支螺絲受力應盡量相等，物件才不會歪斜。</p>
+      <div class="life-content-area">
+        <div id="life-title" class="life-content-title">🏋️ 拔河比賽</div>
+        <p id="life-desc" class="life-content-desc">兩隊拉力相等時繩子不動，力大的一方會把繩子拉向自己這側。</p>
+        <div class="life-anim-box">
+          <canvas id="lifeCanvas" width="560" height="220"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -1159,11 +1162,14 @@ function drawExp1() {
   ctx.fillStyle = '#f8fafc';
   ctx.fillRect(0, 0, CW1, CH1);
 
-  // Protractor hint line
+  // Horizontal guide line
   ctx.strokeStyle = '#cbd5e1';
   ctx.lineWidth = 1;
   ctx.setLineDash([6, 4]);
   ctx.beginPath(); ctx.moveTo(WALL_L, IND_Y); ctx.lineTo(WALL_R, IND_Y); ctx.stroke();
+
+  // Vertical center line
+  ctx.beginPath(); ctx.moveTo(CW1 / 2, 8); ctx.lineTo(CW1 / 2, CH1 - 8); ctx.stroke();
   ctx.setLineDash([]);
 
   const ix = E1.indicatorX;
@@ -1753,11 +1759,396 @@ function resetQuiz() {
   })();
 })();
 
+/* ═══════════════════════ 原理小教室動畫 ═══════════════════════ */
+(function() {
+  function parw(ctx, x1, y1, x2, y2, col, lw) {
+    const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy); if (L<2) return;
+    const ux=dx/L, uy=dy/L, hl=9, hw=5;
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2-ux*hl, y2-uy*hl); ctx.stroke();
+    ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-ux*hl-uy*hw, y2-uy*hl+ux*hw);
+    ctx.lineTo(x2-ux*hl+uy*hw, y2-uy*hl-ux*hw);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function pball(ctx, x, y, r, col) {
+    ctx.beginPath(); ctx.arc(x,y,r,0,6.283);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.8)'; ctx.lineWidth=2; ctx.stroke();
+  }
+
+  // pAnim1: 力的平衡 — equal pulsing arrows, ball stays still
+  (function() {
+    const c = document.getElementById('pAnim1'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    const cx = W/2, cy = H/2 + 4;
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#eff6ff'; ctx.fillRect(0,0,W,H);
+      const p = 0.75 + 0.25 * Math.sin(f * Math.PI / 55);
+      const len = 110 * p;
+      parw(ctx, cx - len - 16, cy, cx - 16, cy, '#3b82f6', 3);
+      parw(ctx, cx + len + 16, cy, cx + 16, cy, '#ef4444', 3);
+      ctx.textAlign='center'; ctx.font='bold 12px Microsoft JhengHei,sans-serif';
+      ctx.fillStyle='#1d4ed8'; ctx.fillText('F₁', cx - len/2 - 16, cy - 13);
+      ctx.fillStyle='#b91c1c'; ctx.fillText('F₂', cx + len/2 + 16, cy - 13);
+      pball(ctx, cx, cy, 13, '#f97316');
+      ctx.fillStyle='white'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('物', cx, cy+4);
+      ctx.fillStyle='#16a34a'; ctx.font='bold 13px Microsoft JhengHei,sans-serif';
+      ctx.textAlign='center'; ctx.fillText('⚖ 靜止不動', cx, cy + 33);
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+
+  // pAnim2: 力不相等 — ball slides toward bigger force (right)
+  (function() {
+    const c = document.getElementById('pAnim2'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    const cy = H/2 + 4;
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#fff7ed'; ctx.fillRect(0,0,W,H);
+      const ph = f % 110;
+      const bx = ph < 75 ? W/2 + (ph/75)*70 : W/2 + 70*(1-(ph-75)/35);
+      ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(20, cy+18); ctx.lineTo(W-20, cy+18); ctx.stroke();
+      parw(ctx, bx - 58, cy, bx - 15, cy, '#3b82f6', 2.5);
+      parw(ctx, bx + 110, cy, bx + 15, cy, '#ef4444', 3.5);
+      ctx.textAlign='center'; ctx.font='bold 11px Microsoft JhengHei,sans-serif';
+      ctx.fillStyle='#1d4ed8'; ctx.fillText('F₁（小）', bx - 36, cy - 13);
+      ctx.fillStyle='#b91c1c'; ctx.fillText('F₂（大）', bx + 63, cy - 13);
+      pball(ctx, bx, cy, 13, '#f97316');
+      ctx.fillStyle='white'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('物', bx, cy+4);
+      ctx.fillStyle='#f97316'; ctx.font='bold 13px Microsoft JhengHei,sans-serif';
+      ctx.textAlign='center'; ctx.fillText('→ 往 F₂ 方向移動', W/2, cy + 33);
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+
+  // pAnim3: 三個力合力 — 3 arrows + resultant
+  (function() {
+    const c = document.getElementById('pAnim3'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    const cx = W/2, cy = H/2 + 10;
+    const COLS = ['#3b82f6','#16a34a','#ef4444'];
+    const LBLS = ['F₁','F₂','F₃'];
+    const ANGS = [0, 2.094, 4.189]; // 0°, 120°, 240°
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#f0fdf4'; ctx.fillRect(0,0,W,H);
+      const lens = [60 + 20*Math.sin(f*Math.PI/70), 60, 60];
+      let rx=0, ry=0;
+      ANGS.forEach((a,i) => {
+        const ex=cx+Math.cos(a)*lens[i], ey=cy+Math.sin(a)*lens[i];
+        parw(ctx, cx, cy, ex, ey, COLS[i], 3);
+        ctx.fillStyle=COLS[i]; ctx.font='bold 12px Microsoft JhengHei,sans-serif';
+        ctx.textAlign='center';
+        ctx.fillText(LBLS[i], cx+Math.cos(a)*(lens[i]+14), cy+Math.sin(a)*(lens[i]+14));
+        rx+=Math.cos(a)*lens[i]; ry+=Math.sin(a)*lens[i];
+      });
+      const mag = Math.hypot(rx,ry);
+      if (mag > 3) {
+        parw(ctx, cx, cy, cx+rx, cy+ry, '#7c3aed', 4);
+        ctx.fillStyle='#7c3aed'; ctx.font='bold 12px Microsoft JhengHei,sans-serif';
+        ctx.textAlign='left'; ctx.fillText('合力', cx+rx+6, cy+ry+4);
+      } else {
+        ctx.fillStyle='#16a34a'; ctx.font='bold 13px Microsoft JhengHei,sans-serif';
+        ctx.textAlign='center'; ctx.fillText('合力≈0 → 平衡', cx, cy - 78);
+      }
+      pball(ctx, cx, cy, 6, '#fff');
+      ctx.strokeStyle='#1e293b'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,cy,6,0,6.283); ctx.stroke();
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+})();
+
+/* ═══════════════════════ 生活應用動畫 ═══════════════════════ */
+const LIFE_DATA = [
+  { title:'🏋️ 拔河比賽', desc:'兩隊拉力相等時繩子不動，力大的一方會把繩子拉向自己這側。' },
+  { title:'🌉 吊橋纜線', desc:'橋面由多條纜線均等支撐，合力向上的分力等於橋的重力，維持平衡。' },
+  { title:'🛍️ 雙手提袋', desc:'兩手均等分擔重量時感覺最輕鬆；一手較用力時另一手感覺較輕。' },
+  { title:'🖼️ 吊掛畫框', desc:'兩條鋼線均等地吊掛畫框，畫框不偏斜；一條較短則畫框傾斜。' },
+  { title:'🤸 體操平衡木', desc:'選手伸展雙臂是為了讓身體重心的合力維持在平衡木上方，保持平衡。' },
+  { title:'🔩 螺絲固定', desc:'多支螺絲固定物件時，每支螺絲受力應盡量相等，物件才不會歪斜。' }
+];
+let lifeAnimId = null;
+let lifeActive = 0;
+const lifeC = document.getElementById('lifeCanvas');
+const lifeCtx = lifeC ? lifeC.getContext('2d') : null;
+const LW = 560, LH = 220;
+
+function larw(x1,y1,x2,y2,col,lw) {
+  if (!lifeCtx) return;
+  const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy); if(L<3) return;
+  const ux=dx/L,uy=dy/L,hl=10,hw=5;
+  lifeCtx.save(); lifeCtx.strokeStyle=col; lifeCtx.lineWidth=lw; lifeCtx.lineCap='round';
+  lifeCtx.beginPath(); lifeCtx.moveTo(x1,y1); lifeCtx.lineTo(x2-ux*hl,y2-uy*hl); lifeCtx.stroke();
+  lifeCtx.fillStyle=col; lifeCtx.beginPath(); lifeCtx.moveTo(x2,y2);
+  lifeCtx.lineTo(x2-ux*hl-uy*hw,y2-uy*hl+ux*hw);
+  lifeCtx.lineTo(x2-ux*hl+uy*hw,y2-uy*hl-ux*hw);
+  lifeCtx.closePath(); lifeCtx.fill(); lifeCtx.restore();
+}
+function lfill(x,y,w,h,col,r) {
+  if(!lifeCtx) return; r=r||4;
+  lifeCtx.beginPath(); lifeCtx.roundRect(x,y,w,h,r);
+  lifeCtx.fillStyle=col; lifeCtx.fill();
+}
+function ltext(t,x,y,col,sz,align) {
+  if(!lifeCtx) return;
+  lifeCtx.fillStyle=col||'#1e293b';
+  lifeCtx.font=(sz||'12')+'px Microsoft JhengHei,sans-serif';
+  lifeCtx.textAlign=align||'center'; lifeCtx.fillText(t,x,y);
+}
+
+function showLife(i) {
+  lifeActive = i;
+  if (lifeAnimId) { cancelAnimationFrame(lifeAnimId); lifeAnimId = null; }
+  document.querySelectorAll('.life-tab-btn').forEach((b,j) => b.classList.toggle('active', j===i));
+  document.getElementById('life-title').textContent = LIFE_DATA[i].title;
+  document.getElementById('life-desc').textContent = LIFE_DATA[i].desc;
+  const fns = [lifeAnim0,lifeAnim1,lifeAnim2,lifeAnim3,lifeAnim4,lifeAnim5];
+  fns[i]();
+}
+
+// 0: 拔河比賽
+function lifeAnim0() {
+  const idx=0; let f=0;
+  (function loop() {
+    if (lifeActive!==idx) return;
+    lifeCtx.clearRect(0,0,LW,LH);
+    lifeCtx.fillStyle='#f0f4f8'; lifeCtx.fillRect(0,0,LW,LH);
+    const cy=LH/2;
+    const ph=f%140, off = ph<90 ? (ph/90)*50 : 50*(1-(ph-90)/50);
+    const kx = LW/2 + off; // knot moves right = 乙隊 losing
+    // Rope
+    lifeCtx.strokeStyle='#92400e'; lifeCtx.lineWidth=4;
+    lifeCtx.beginPath(); lifeCtx.moveTo(90,cy); lifeCtx.lineTo(kx,cy); lifeCtx.lineTo(LW-90,cy); lifeCtx.stroke();
+    // Teams
+    lfill(20,cy-28,70,56,'#3b82f6',6);
+    lifeCtx.fillStyle='white'; lifeCtx.font='bold 13px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('甲隊',55,cy+5);
+    lfill(LW-90,cy-28,70,56,'#ef4444',6);
+    lifeCtx.fillStyle='white'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('乙隊',LW-55,cy+5);
+    // Knot
+    lifeCtx.beginPath(); lifeCtx.arc(kx,cy,10,0,Math.PI*2);
+    lifeCtx.fillStyle='#fbbf24'; lifeCtx.fill();
+    lifeCtx.strokeStyle='#92400e'; lifeCtx.lineWidth=2; lifeCtx.stroke();
+    // Force arrows
+    larw(kx,cy-22,kx-80,cy-22,'#3b82f6',3);
+    larw(kx,cy-22,kx+50,cy-22,'#ef4444',2.5);
+    lifeCtx.font='bold 11px Microsoft JhengHei,sans-serif';
+    lifeCtx.fillStyle='#1d4ed8'; lifeCtx.textAlign='center'; lifeCtx.fillText('F甲(大)',kx-40,cy-32);
+    lifeCtx.fillStyle='#b91c1c'; lifeCtx.fillText('F乙(小)',kx+25,cy-32);
+    lifeCtx.fillStyle='#f97316'; lifeCtx.font='bold 13px Microsoft JhengHei,sans-serif';
+    lifeCtx.textAlign='center'; lifeCtx.fillText('繩結往力較大的甲隊方向移動 ←', LW/2, cy+48);
+    f++; lifeAnimId=requestAnimationFrame(loop);
+  })();
+}
+
+// 1: 吊橋纜線
+function lifeAnim1() {
+  const idx=1; let f=0;
+  (function loop() {
+    if (lifeActive!==idx) return;
+    lifeCtx.clearRect(0,0,LW,LH);
+    lifeCtx.fillStyle='#f0f4f8'; lifeCtx.fillRect(0,0,LW,LH);
+    const bridgeY=LH-50, towerH=130, towerW=16;
+    const lTx=80, rTx=LW-80;
+    // Towers
+    lfill(lTx-towerW/2, bridgeY-towerH, towerW, towerH, '#475569',3);
+    lfill(rTx-towerW/2, bridgeY-towerH, towerW, towerH, '#475569',3);
+    // Bridge deck
+    lfill(lTx, bridgeY-10, rTx-lTx, 20, '#64748b',4);
+    // Cables from tower tops to bridge points
+    const p = 0.92 + 0.08*Math.sin(f*Math.PI/60);
+    const pts = [lTx+80, lTx+160, LW/2, rTx-160, rTx-80];
+    lifeCtx.strokeStyle='#7c3aed'; lifeCtx.lineWidth=2;
+    pts.forEach(px => {
+      lifeCtx.beginPath(); lifeCtx.moveTo(lTx, bridgeY-towerH); lifeCtx.lineTo(px, bridgeY-10); lifeCtx.stroke();
+      lifeCtx.beginPath(); lifeCtx.moveTo(rTx, bridgeY-towerH); lifeCtx.lineTo(px, bridgeY-10); lifeCtx.stroke();
+      // Upward force arrows on deck
+      larw(px, bridgeY-10, px, bridgeY-10-35*p, '#16a34a', 2.5);
+    });
+    // Weight arrows on deck
+    larw(LW/2, bridgeY, LW/2, bridgeY+32, '#ef4444', 3);
+    lifeCtx.fillStyle='#b91c1c'; lifeCtx.font='bold 11px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('重力(W)', LW/2, bridgeY+45);
+    lifeCtx.fillStyle='#16a34a'; lifeCtx.font='bold 11px Microsoft JhengHei,sans-serif';
+    lifeCtx.fillText('纜線合力 ↑ = W ↓  → 橋面平衡', LW/2, 20);
+    f++; lifeAnimId=requestAnimationFrame(loop);
+  })();
+}
+
+// 2: 雙手提袋
+function lifeAnim2() {
+  const idx=2; let f=0;
+  (function loop() {
+    if (lifeActive!==idx) return;
+    lifeCtx.clearRect(0,0,LW,LH);
+    lifeCtx.fillStyle='#f0f4f8'; lifeCtx.fillRect(0,0,LW,LH);
+    const bagW=120, bagH=80, bx=LW/2-bagW/2, by=LH/2-bagH/2+10;
+    const ph=f%130, p = ph<80 ? ph/80 : 1-(ph-80)/50;
+    const lHx=LW/2-110, rHx=LW/2+110, handsY=by-30;
+    // Bag
+    lfill(bx, by, bagW, bagH, '#f59e0b',8);
+    lifeCtx.strokeStyle='#92400e'; lifeCtx.lineWidth=2; lifeCtx.strokeRect(bx,by,bagW,bagH);
+    lifeCtx.fillStyle='white'; lifeCtx.font='bold 14px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('袋子', LW/2, by+bagH/2+5);
+    // Ropes to hands
+    lifeCtx.strokeStyle='#78350f'; lifeCtx.lineWidth=2;
+    lifeCtx.beginPath(); lifeCtx.moveTo(bx+20,by); lifeCtx.lineTo(lHx,handsY+20); lifeCtx.stroke();
+    lifeCtx.beginPath(); lifeCtx.moveTo(bx+bagW-20,by); lifeCtx.lineTo(rHx,handsY+20); lifeCtx.stroke();
+    // Hands (circles)
+    const lUp = 30+15*p, rUp = 30-15*p;
+    lifeCtx.beginPath(); lifeCtx.arc(lHx, handsY-lUp, 18,0,6.283);
+    lifeCtx.fillStyle='#fcd34d'; lifeCtx.fill(); lifeCtx.strokeStyle='#92400e'; lifeCtx.lineWidth=2; lifeCtx.stroke();
+    lifeCtx.beginPath(); lifeCtx.arc(rHx, handsY-rUp, 18,0,6.283);
+    lifeCtx.fillStyle='#fcd34d'; lifeCtx.fill(); lifeCtx.stroke();
+    // Force arrows
+    larw(lHx, handsY+20, lHx, handsY-lUp+20, '#3b82f6', 2.5);
+    larw(rHx, handsY+20, rHx, handsY-rUp+20, '#ef4444', 2.5);
+    larw(LW/2, by+bagH, LW/2, by+bagH+38, '#475569', 3);
+    lifeCtx.font='bold 11px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillStyle='#475569'; lifeCtx.fillText('重力', LW/2, by+bagH+50);
+    lifeCtx.fillStyle='#1e293b'; lifeCtx.font='bold 12px Microsoft JhengHei,sans-serif';
+    lifeCtx.fillText('左右手分擔重量，合力向上 = 袋子重量', LW/2, LH-8);
+    f++; lifeAnimId=requestAnimationFrame(loop);
+  })();
+}
+
+// 3: 吊掛畫框
+function lifeAnim3() {
+  const idx=3; let f=0;
+  (function loop() {
+    if (lifeActive!==idx) return;
+    lifeCtx.clearRect(0,0,LW,LH);
+    lifeCtx.fillStyle='#f0f4f8'; lifeCtx.fillRect(0,0,LW,LH);
+    // Wall/ceiling
+    lfill(0,0,LW,18,'#94a3b8',0);
+    const ph=f%160, tilt = ph<100 ? (ph/100)*12 : 12*(1-(ph-100)/60); // degrees
+    const fW=140, fH=110, fx=LW/2-fW/2, fy=70;
+    const lHookX=LW/2-80, rHookX=LW/2+80, hookY=18;
+    // Strings
+    lifeCtx.strokeStyle='#7c3aed'; lifeCtx.lineWidth=2;
+    lifeCtx.beginPath(); lifeCtx.moveTo(lHookX, hookY); lifeCtx.lineTo(fx+20, fy); lifeCtx.stroke();
+    lifeCtx.beginPath(); lifeCtx.moveTo(rHookX, hookY); lifeCtx.lineTo(fx+fW-20, fy); lifeCtx.stroke();
+    // Frame (with tilt)
+    lifeCtx.save(); lifeCtx.translate(LW/2, fy+fH/2); lifeCtx.rotate(tilt*Math.PI/180);
+    lfill(-fW/2,-fH/2,fW,fH,'#d97706',4);
+    lfill(-fW/2+8,-fH/2+8,fW-16,fH-16,'#fef3c7',3);
+    lifeCtx.fillStyle='#92400e'; lifeCtx.font='bold 13px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('畫框',0,5);
+    lifeCtx.restore();
+    // Force arrows
+    larw(lHookX, hookY+5, lHookX-20, hookY+45, '#3b82f6', 2.5);
+    larw(rHookX, hookY+5, rHookX+20, hookY+45, '#ef4444', 2.5);
+    larw(LW/2, fy+fH+5, LW/2, fy+fH+40, '#475569', 3);
+    lifeCtx.font='bold 11px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillStyle='#475569'; lifeCtx.fillText('重力', LW/2, fy+fH+52);
+    lifeCtx.fillStyle='#1e293b'; lifeCtx.font='bold 12px Microsoft JhengHei,sans-serif';
+    lifeCtx.fillText('繩長不同 → 畫框傾斜；繩長相同 → 畫框正立', LW/2, LH-8);
+    f++; lifeAnimId=requestAnimationFrame(loop);
+  })();
+}
+
+// 4: 體操平衡木
+function lifeAnim4() {
+  const idx=4; let f=0;
+  (function loop() {
+    if (lifeActive!==idx) return;
+    lifeCtx.clearRect(0,0,LW,LH);
+    lifeCtx.fillStyle='#f0f4f8'; lifeCtx.fillRect(0,0,LW,LH);
+    const bx=LW/2, by=LH-55, swing = 18*Math.sin(f*Math.PI/80);
+    // Beam
+    lfill(LW/2-130, by, 260, 16, '#92400e',4);
+    // Support
+    lfill(LW/2-6, by+16, 12, 30, '#64748b',2);
+    // Person (stick figure, slightly swaying)
+    lifeCtx.save(); lifeCtx.translate(bx + swing*0.3, by);
+    // Legs
+    lifeCtx.strokeStyle='#1e293b'; lifeCtx.lineWidth=3; lifeCtx.lineCap='round';
+    lifeCtx.beginPath(); lifeCtx.moveTo(0,0); lifeCtx.lineTo(-12,-30); lifeCtx.stroke();
+    lifeCtx.beginPath(); lifeCtx.moveTo(0,0); lifeCtx.lineTo(12,-30); lifeCtx.stroke();
+    // Body
+    lifeCtx.beginPath(); lifeCtx.moveTo(0,-30); lifeCtx.lineTo(0,-65); lifeCtx.stroke();
+    // Arms extended
+    const armSwing = 10*Math.sin(f*Math.PI/60);
+    lifeCtx.beginPath(); lifeCtx.moveTo(-50,-55+armSwing); lifeCtx.lineTo(0,-50); lifeCtx.lineTo(50,-55-armSwing); lifeCtx.stroke();
+    // Head
+    lifeCtx.beginPath(); lifeCtx.arc(0,-73,10,0,6.283);
+    lifeCtx.fillStyle='#fcd34d'; lifeCtx.fill(); lifeCtx.strokeStyle='#1e293b'; lifeCtx.lineWidth=2; lifeCtx.stroke();
+    // Weight arrow
+    larw(0,-30,0,10,'#ef4444',3);
+    lifeCtx.restore();
+    lifeCtx.fillStyle='#b91c1c'; lifeCtx.font='bold 11px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('重心', bx+swing*0.3+20, by-12);
+    lifeCtx.fillStyle='#1e293b'; lifeCtx.font='bold 12px Microsoft JhengHei,sans-serif';
+    lifeCtx.fillText('伸展雙臂 → 重心保持在平衡木正上方', LW/2, 22);
+    f++; lifeAnimId=requestAnimationFrame(loop);
+  })();
+}
+
+// 5: 螺絲固定
+function lifeAnim5() {
+  const idx=5; let f=0;
+  (function loop() {
+    if (lifeActive!==idx) return;
+    lifeCtx.clearRect(0,0,LW,LH);
+    lifeCtx.fillStyle='#f0f4f8'; lifeCtx.fillRect(0,0,LW,LH);
+    const bw=340, bh=100, bx=LW/2-bw/2, by=LH/2-bh/2;
+    const tilt = 8*Math.sin(f*Math.PI/70);
+    lifeCtx.save(); lifeCtx.translate(LW/2, LH/2); lifeCtx.rotate(tilt*Math.PI/180);
+    // Board
+    lifeCtx.beginPath(); lifeCtx.roundRect(-bw/2,-bh/2,bw,bh,6);
+    lifeCtx.fillStyle='#d97706'; lifeCtx.fill();
+    // Screws at corners + middle
+    const screwPts = [[-130,-30],[-130,30],[0,-30],[0,30],[130,-30],[130,30]];
+    const p = 0.7+0.3*Math.sin(f*Math.PI/70);
+    screwPts.forEach((pt,i) => {
+      const forceLen = i < 3 ? 35*p : 35*(2-p); // imbalanced when tilted
+      lifeCtx.beginPath(); lifeCtx.arc(pt[0],pt[1],8,0,6.283);
+      lifeCtx.fillStyle='#475569'; lifeCtx.fill();
+      lifeCtx.strokeStyle='#94a3b8'; lifeCtx.lineWidth=1.5; lifeCtx.stroke();
+      // Force arrow upward from each screw
+      const col = Math.abs(forceLen-35)>5 ? '#ef4444' : '#16a34a';
+      lifeCtx.save(); lifeCtx.restore();
+    });
+    lifeCtx.restore();
+    // Arrows outside (relative to canvas)
+    screwPts.forEach((pt,i) => {
+      const rad=tilt*Math.PI/180, sx=LW/2+pt[0]*Math.cos(rad)-pt[1]*Math.sin(rad);
+      const sy=LH/2+pt[0]*Math.sin(rad)+pt[1]*Math.cos(rad);
+      const fl = i<3 ? 30*p : 30*(2-p);
+      const col = Math.abs(fl-30)>4 ? '#ef4444':'#16a34a';
+      larw(sx, sy-8, sx, sy-8-fl, col, 2.5);
+    });
+    lifeCtx.fillStyle='#1e293b'; lifeCtx.font='bold 12px Microsoft JhengHei,sans-serif'; lifeCtx.textAlign='center';
+    lifeCtx.fillText('每支螺絲受力不均 → 板材歪斜；均等受力 → 穩固', LW/2, LH-8);
+    f++; lifeAnimId=requestAnimationFrame(loop);
+  })();
+}
+
 /* ═══════════════════════ INIT ═══════════════════════ */
+// roundRect polyfill for older browsers
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {
+    r = Math.min(r, w/2, h/2);
+    this.beginPath(); this.moveTo(x+r,y);
+    this.arcTo(x+w,y,x+w,y+h,r); this.arcTo(x+w,y+h,x,y+h,r);
+    this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r); this.closePath();
+  };
+}
 updateExp1();
 drawExp1();
 updateExp2();
 drawExp2();
+showLife(0);
 </script>
 
 </body>
