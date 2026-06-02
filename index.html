@@ -482,19 +482,19 @@
     <div class="card-title">🎯 學習目標</div>
     <div class="obj-grid">
       <div class="obj-item">
-        <span class="obj-icon">📏</span>
+        <canvas id="objAnim1" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
         了解<strong>力的大小</strong>對物體移動方向的影響
       </div>
       <div class="obj-item">
-        <span class="obj-icon">⚖️</span>
+        <canvas id="objAnim2" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
         知道兩端力相等時物體不會移動（<strong>力的平衡</strong>）
       </div>
       <div class="obj-item">
-        <span class="obj-icon">➡️</span>
+        <canvas id="objAnim3" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
         知道力不相等時，物體往<strong>較大力</strong>的方向移動
       </div>
       <div class="obj-item">
-        <span class="obj-icon">🔺</span>
+        <canvas id="objAnim4" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
         了解三個力的<strong>合力</strong>決定物體移動方向
       </div>
     </div>
@@ -1642,6 +1642,116 @@ function resetQuiz() {
   document.querySelectorAll('.q-feedback').forEach(f => f.classList.remove('show'));
   document.getElementById('score-box').classList.remove('show');
 }
+
+/* ═══════════════════════ 學習目標動畫 ═══════════════════════ */
+(function() {
+  function arw(ctx, x1, y1, x2, y2, col, lw) {
+    const dx = x2-x1, dy = y2-y1, L = Math.hypot(dx, dy);
+    if (L < 3) return;
+    const ux = dx/L, uy = dy/L, hw = 5, hl = 9;
+    ctx.save();
+    ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2-ux*hl, y2-uy*hl); ctx.stroke();
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.moveTo(x2, y2);
+    ctx.lineTo(x2-ux*hl-uy*hw, y2-uy*hl+ux*hw);
+    ctx.lineTo(x2-ux*hl+uy*hw, y2-uy*hl-ux*hw);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function ball(ctx, x, y) {
+    ctx.beginPath(); ctx.arc(x, y, 9, 0, 6.283);
+    ctx.fillStyle = '#ef4444'; ctx.fill();
+    ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // 動畫1：力越大，球位移越大
+  (function() {
+    const c = document.getElementById('objAnim1'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height, cy = H/2 - 4;
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      const str = (Math.sin(f * Math.PI / 60) + 1) / 2;
+      const len = 12 + 28 * str;
+      const bx = W/2 + 8 + 12 * str;
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(8, cy+13); ctx.lineTo(W-8, cy+13); ctx.stroke();
+      arw(ctx, bx - len, cy, bx - 11, cy, '#3b82f6', 2.5);
+      ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('F', bx - len/2, cy - 10);
+      ball(ctx, bx, cy);
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+
+  // 動畫2：兩側等力，球靜止
+  (function() {
+    const c = document.getElementById('objAnim2'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    const cx = W/2, cy = H/2 - 6;
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      const p = 0.75 + 0.25 * Math.sin(f * Math.PI / 50);
+      const len = 24 * p;
+      arw(ctx, cx - len - 11, cy, cx - 11, cy, '#3b82f6', 2.5);
+      arw(ctx, cx + len + 11, cy, cx + 11, cy, '#f97316', 2.5);
+      ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#3b82f6'; ctx.fillText('F₁', cx - len/2 - 11, cy - 9);
+      ctx.fillStyle = '#f97316'; ctx.fillText('F₂', cx + len/2 + 11, cy - 9);
+      ball(ctx, cx, cy);
+      ctx.fillStyle = '#16a34a'; ctx.font = 'bold 10px sans-serif';
+      ctx.fillText('靜止', cx, cy + 26);
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+
+  // 動畫3：力不相等，球往較大力方向移動
+  (function() {
+    const c = document.getElementById('objAnim3'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height, cy = H/2 - 4;
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      const ph = f % 90;
+      const bx = ph < 60 ? W/2 + (ph/60)*15 : W/2 + 15*(1-(ph-60)/30);
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(8, cy+13); ctx.lineTo(W-8, cy+13); ctx.stroke();
+      arw(ctx, bx - 47, cy, bx - 11, cy, '#3b82f6', 3);
+      ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('大', bx - 29, cy - 10);
+      arw(ctx, bx + 29, cy, bx + 11, cy, '#f97316', 2);
+      ctx.fillStyle = '#f97316'; ctx.fillText('小', bx + 20, cy - 10);
+      ball(ctx, bx, cy);
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+
+  // 動畫4：三個力合成一個合力
+  (function() {
+    const c = document.getElementById('objAnim4'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    const cx = W/2, cy = H/2;
+    const COLS = ['#3b82f6','#f97316','#16a34a'];
+    const ANGS = [Math.PI/6, Math.PI*5/6, Math.PI*3/2]; // 30°, 150°, 270°
+    const BASE = [28, 24, 20];
+    let f = 0;
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      const lens = [BASE[0] + 10*Math.sin(f*Math.PI/80), BASE[1], BASE[2]];
+      let rx = 0, ry = 0;
+      ANGS.forEach((a, i) => {
+        arw(ctx, cx, cy, cx+Math.cos(a)*lens[i], cy+Math.sin(a)*lens[i], COLS[i], 2.5);
+        rx += Math.cos(a)*lens[i]; ry += Math.sin(a)*lens[i];
+      });
+      if (Math.hypot(rx, ry) > 2) arw(ctx, cx, cy, cx+rx, cy+ry, '#7c3aed', 3.5);
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 6.283);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.stroke();
+      f++; requestAnimationFrame(loop);
+    })();
+  })();
+})();
 
 /* ═══════════════════════ INIT ═══════════════════════ */
 updateExp1();
