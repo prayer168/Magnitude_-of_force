@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>數位互動教材生成流程 SOP</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --primary-dark: #1a3a5c;
+      --secondary: #f97316;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #1e293b;
+      --code-text: #e2e8f0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: linear-gradient(135deg, #1a3a5c 0%, #2563eb 100%);
+      color: white;
+      padding: 36px 40px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::before {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .site-header::after {
+      content: '';
+      position: absolute;
+      right: 60px; bottom: -80px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(249,115,22,0.9);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+    .site-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .site-header p {
+      font-size: 1rem;
+      opacity: 0.85;
+      position: relative;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── Phase nav ── */
+    .phase-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .phase-nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .phase-nav a:hover { background: var(--primary-light); color: var(--primary); }
+
+    /* ── Phase card ── */
+    .phase {
+      margin-bottom: 36px;
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .phase-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 800; color: white;
+      flex-shrink: 0;
+    }
+    .phase-title { font-size: 1.2rem; font-weight: 700; }
+    .phase-subtitle { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+    .phase-body { padding: 20px 24px; }
+
+    /* ── Step ── */
+    .step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-weight: 700; margin-bottom: 4px; }
+    .step-desc { font-size: 0.9rem; color: var(--muted); }
+
+    /* ── Code block ── */
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 10px;
+      font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    }
+    code {
+      background: #f1f5f9;
+      color: #dc2626;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.85em;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+
+    /* Comment color in code */
+    .cm { color: #64748b; }
+    .kw { color: #93c5fd; }
+    .st { color: #86efac; }
+    .fn { color: #fcd34d; }
+    .nu { color: #fb923c; }
+
+    /* ── Callout ── */
+    .callout {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin-top: 12px;
+    }
+    .callout-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .callout.info { background: var(--primary-light); border-left: 4px solid var(--primary); }
+    .callout.warn { background: var(--warning-light); border-left: 4px solid var(--warning); }
+    .callout.ok { background: var(--success-light); border-left: 4px solid var(--success); }
+    .callout.danger { background: var(--danger-light); border-left: 4px solid var(--danger); }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; margin-top: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; margin-top: 10px; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li::before {
+      content: '☐';
+      font-size: 1rem;
+      color: var(--primary);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      vertical-align: middle;
+    }
+    .badge-blue { background: var(--primary-light); color: var(--primary); }
+    .badge-orange { background: #fff7ed; color: #c2410c; }
+    .badge-green { background: var(--success-light); color: var(--success); }
+    .badge-red { background: var(--danger-light); color: var(--danger); }
+
+    /* ── Phase colors ── */
+    .c0 { background: #6366f1; }
+    .c1 { background: #2563eb; }
+    .c2 { background: #0891b2; }
+    .c3 { background: #16a34a; }
+    .c4 { background: #d97706; }
+    .c5 { background: #dc2626; }
+    .c6 { background: #7c3aed; }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── Retrospective ── */
+    .retro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .retro-card {
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .retro-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
+    .retro-card ul { list-style: none; }
+    .retro-card li { font-size: 0.83rem; padding: 3px 0; }
+    .retro-card li::before { margin-right: 6px; }
+    .retro-good { background: var(--success-light); color: #14532d; }
+    .retro-good li::before { content: '✅'; }
+    .retro-bad { background: var(--warning-light); color: #78350f; }
+    .retro-bad li::before { content: '⚠️'; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    @media (max-width: 600px) {
+      .retro-grid { grid-template-columns: 1fr; }
+      .site-header { padding: 24px 20px; }
+      .site-header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-badge">數位教材開發 SOP v1.0</div>
+  <h1>📘 數位互動教材生成流程</h1>
+  <p>從零到部署的完整步驟手冊 — 國小自然領域 Canvas 互動教材專用</p>
+</div>
+
+<div class="container">
+
+  <!-- Phase Nav -->
+  <nav class="phase-nav">
+    <a href="#retro">🔍 複盤</a>
+    <a href="#p0">0 準備</a>
+    <a href="#p1">1 內容萃取</a>
+    <a href="#p2">2 架構規劃</a>
+    <a href="#p3">3 骨架建立</a>
+    <a href="#p4">4 Canvas 動畫</a>
+    <a href="#p5">5 版面配置</a>
+    <a href="#p6">6 測試驗證</a>
+    <a href="#p7">7 部署</a>
+    <a href="#checklist">✅ 驗收清單</a>
+    <a href="#patterns">⚡ 速查</a>
+  </nav>
+
+  <!-- 複盤 -->
+  <div class="phase" id="retro">
+    <div class="phase-header">
+      <div class="phase-num" style="background:#475569;">🔍</div>
+      <div>
+        <div class="phase-title">複盤總結 — 力的大小 v1.0</div>
+        <div class="phase-subtitle">從這個專案萃取出的經驗與改進點</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="retro-grid">
+        <div class="retro-card retro-good">
+          <h4>做得好的事</h4>
+          <ul>
+            <li>單一 HTML 檔案，零依賴，易部署</li>
+            <li>CSS 自訂屬性集中管理色彩</li>
+            <li>IIFE 隔離每個 Canvas 動畫</li>
+            <li>分段驗證，每段截圖確認</li>
+            <li>GitHub Pages 一鍵部署</li>
+          </ul>
+        </div>
+        <div class="retro-card retro-bad">
+          <h4>踩過的坑（已納入 SOP）</h4>
+          <ul>
+            <li>瀏覽器快取：驗證前先強制重整</li>
+            <li>Tab 捲軸：用 flex:1 取代 overflow-y:auto</li>
+            <li>Canvas 溢出：flex 子容器加 min-width:0</li>
+            <li>RAF 衝突：切換前先 cancelAnimationFrame</li>
+            <li>GitHub Pages 延遲：告知使用者 Ctrl+Shift+R</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>效率改進點</th>
+            <th>舊做法</th>
+            <th>新 SOP 做法</th>
+          </tr>
+          <tr>
+            <td>動畫 RAF 管理</td>
+            <td>各動畫自行管理，切換時衝突</td>
+            <td>統一 <code>lifeAnimId</code> + 守衛條件</td>
+          </tr>
+          <tr>
+            <td>版面驗證時機</td>
+            <td>全部做完才測</td>
+            <td>每完成一個 section 就截圖確認</td>
+          </tr>
+          <tr>
+            <td>Commit 策略</td>
+            <td>一次 commit 所有改動</td>
+            <td>每完成一個功能就 commit（小步快跑）</td>
+          </tr>
+          <tr>
+            <td>內容準備</td>
+            <td>邊做邊想文字</td>
+            <td>先讀 docx 萃取所有文字，再開始寫 HTML</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 0 -->
+  <div class="phase" id="p0">
+    <div class="phase-header">
+      <div class="phase-num c0">0</div>
+      <div>
+        <div class="phase-title">準備環境</div>
+        <div class="phase-subtitle">一次性設定，之後每個新教材直接複用</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">建立專案資料夾與 Git 儲存庫</div>
+          <div class="step-desc">資料夾名稱建議用英文（避免 GitHub URL 亂碼）</div>
+          <pre>mkdir my-science-app
+cd my-science-app
+git init
+git remote add origin https://github.com/username/my-science-app.git</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">建立 .claude/launch.json（本地預覽伺服器）</div>
+          <pre>{
+  "version": "0.0.1",
+  "configurations": [{
+    "name": "教材名稱",
+    "runtimeExecutable": "python",
+    "runtimeArgs": ["-m", "http.server", "7788", "--directory", "專案完整路徑"],
+    "port": 7788
+  }]
+}</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">建立 .gitignore</div>
+          <pre>.claude/
+*.docx
+*.srt
+*.pdf
+Thumbs.db
+.DS_Store</pre>
+        </div>
+      </div>
+      <div class="callout info">
+        <span class="callout-icon">💡</span>
+        <span>Claude Code 內建 <code>preview_start</code> 工具可自動啟動 Python HTTP Server，設定好 launch.json 後每次開啟 session 即可直接預覽。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase" id="p1">
+    <div class="phase-header">
+      <div class="phase-num c1">1</div>
+      <div>
+        <div class="phase-title">內容萃取</div>
+        <div class="phase-subtitle">從 docx / 教案文件中提取所有需要的文字內容</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">使用 docx skill 讀取來源文件</div>
+          <div class="step-desc">在 Claude Code 中呼叫 <code>/docx</code> 指令，傳入 docx 路徑</div>
+          <div class="callout info">
+            <span class="callout-icon">📄</span>
+            <span>工具會自動解壓縮 docx 並以 Markdown 格式輸出全文，方便後續整理</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">整理出以下六項清單</div>
+          <div class="table-wrap">
+            <table>
+              <tr><th>清單</th><th>說明</th><th>用於</th></tr>
+              <tr><td>📌 學習目標</td><td>3–5 條條列</td><td>觀察站卡片</td></tr>
+              <tr><td>🔑 關鍵詞彙</td><td>名詞 + 定義</td><td>觀察站詞彙區 Badge</td></tr>
+              <tr><td>🧪 實驗步驟</td><td>操作流程 + 變因</td><td>互動實驗室</td></tr>
+              <tr><td>📚 核心原理</td><td>3 條公式/規律</td><td>原理小教室三卡</td></tr>
+              <tr><td>🌏 生活案例</td><td>6 個情境</td><td>生活應用 Tab</td></tr>
+              <tr><td>✏️ 評量題目</td><td>4–6 題選擇</td><td>挑戰測驗</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <span><strong>先把所有文字備妥，再開始寫 HTML。</strong> 邊做邊想文字會打斷節奏，拖慢整體速度。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase" id="p2">
+    <div class="phase-header">
+      <div class="phase-num c2">2</div>
+      <div>
+        <div class="phase-title">架構規劃</div>
+        <div class="phase-subtitle">決定五分頁結構、配色主題、Canvas 動畫清單</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">確認五大分頁內容</div>
+          <div class="table-wrap">
+            <table>
+              <tr><th>分頁</th><th>主要元件</th><th>Canvas 數量</th></tr>
+              <tr><td>🔭 觀察站</td><td>學習目標卡 × 4、器材 Badge、詞彙表</td><td>0–4（小預覽）</td></tr>
+              <tr><td>🧪 互動實驗室</td><td>實驗 Tab × 2、滑桿控制</td><td>2</td></tr>
+              <tr><td>📚 原理小教室</td><td>原理卡 × 3</td><td>3</td></tr>
+              <tr><td>🌏 生活應用</td><td>左 Tab 列 × 6、右動畫</td><td>1（共用）</td></tr>
+              <tr><td>✏️ 挑戰測驗</td><td>題目卡 × 4–6</td><td>0</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">選擇色彩主題</div>
+          <div class="table-wrap">
+            <table>
+              <tr><th>學科主題</th><th>主色</th><th>輔色</th><th>導覽列</th></tr>
+              <tr><td>力學 / 運動</td><td>#2563eb 藍</td><td>#f97316 橘</td><td>#1a3a5c 深藍</td></tr>
+              <tr><td>生態 / 植物</td><td>#16a34a 綠</td><td>#f59e0b 黃</td><td>#14532d 深綠</td></tr>
+              <tr><td>光 / 天文</td><td>#7c3aed 紫</td><td>#f97316 橘</td><td>#1e1b4b 深紫</td></tr>
+              <tr><td>水 / 地球</td><td>#0891b2 青</td><td>#16a34a 綠</td><td>#164e63 深青</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">列出每個 Canvas 的動畫設計</div>
+          <div class="step-desc">畫面上要出現什麼物件？箭頭方向？文字標籤？動畫如何循環？<br>先在紙上或文字中草圖，再開始寫 JavaScript。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase" id="p3">
+    <div class="phase-header">
+      <div class="phase-num c3">3</div>
+      <div>
+        <div class="phase-title">HTML 骨架建立</div>
+        <div class="phase-subtitle">CSS 設計系統 → Header → Nav → Section 容器</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">CSS 根變數（貼在 &lt;style&gt; 最上方）</div>
+          <pre>:root {
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+  --secondary: #f97316;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+}
+body {
+  font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  overflow-x: hidden; <span class="cm">/* 防水平捲軸，必加 */</span>
+}</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Header（僅標題，不放副標）</div>
+          <pre>&lt;header&gt;
+  &lt;div class="header-icon"&gt;🔬&lt;/div&gt;
+  &lt;div&gt;&lt;h1&gt;主題名稱&lt;/h1&gt;&lt;/div&gt;
+&lt;/header&gt;</pre>
+          <div class="callout warn">
+            <span class="callout-icon">⚠️</span>
+            <span>副標題（如學年度、機構名稱）<strong>不放在 Header 裡</strong>。Header 空間小，副標題會顯得擁擠，且使用者不需要每頁都看到。</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Tab 導覽列</div>
+          <pre>&lt;nav&gt;
+  &lt;button class="nav-btn active" data-sec="observe"&gt;🔭 觀察站&lt;/button&gt;
+  &lt;button class="nav-btn" data-sec="lab"&gt;🧪 互動實驗室&lt;/button&gt;
+  &lt;button class="nav-btn" data-sec="principle"&gt;📚 原理小教室&lt;/button&gt;
+  &lt;button class="nav-btn" data-sec="life"&gt;🌏 生活應用&lt;/button&gt;
+  &lt;button class="nav-btn" data-sec="quiz"&gt;✏️ 挑戰測驗&lt;/button&gt;
+&lt;/nav&gt;
+
+&lt;script&gt;
+document.querySelectorAll('.nav-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.nav-btn').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    document.querySelectorAll('.section').forEach(function(s) {
+      s.style.display = 'none';
+    });
+    document.getElementById('sec-' + btn.dataset.sec).style.display = 'block';
+  });
+});
+&lt;/script&gt;</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Section 容器骨架</div>
+          <pre>&lt;main&gt;
+  &lt;section id="sec-observe"  class="section"&gt;&lt;/section&gt;
+  &lt;section id="sec-lab"      class="section" style="display:none"&gt;&lt;/section&gt;
+  &lt;section id="sec-principle" class="section" style="display:none"&gt;&lt;/section&gt;
+  &lt;section id="sec-life"     class="section" style="display:none"&gt;&lt;/section&gt;
+  &lt;section id="sec-quiz"     class="section" style="display:none"&gt;&lt;/section&gt;
+&lt;/main&gt;</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase" id="p4">
+    <div class="phase-header">
+      <div class="phase-num c4">4</div>
+      <div>
+        <div class="phase-title">Canvas 動畫實作</div>
+        <div class="phase-subtitle">IIFE 隔離 → 箭頭工具函式 → RAF 迴圈 → 切換守衛</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">每個動畫必須用 IIFE 包裹</div>
+          <pre><span class="cm">// ✅ 正確：變數不會汙染全域</span>
+(function() {
+  var c = document.getElementById('myCanvas');
+  if (!c) return;
+  var ctx = c.getContext('2d');
+  var W = c.width, H = c.height;
+  var t = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    <span class="cm">// ... 繪製邏輯</span>
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+<span class="cm">// ❌ 錯誤：全域變數，多個動畫時 t 會互相覆蓋</span>
+var t = 0;
+function draw() { ... }</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">必備工具函式（加在 &lt;script&gt; 最上方）</div>
+          <pre><span class="cm">// 畫箭頭</span>
+function drawArrow(ctx, x1, y1, x2, y2, color, lw) {
+  var angle = Math.atan2(y2-y1, x2-x1), hl = 12;
+  ctx.save();
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw||2;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hl*Math.cos(angle-Math.PI/6), y2 - hl*Math.sin(angle-Math.PI/6));
+  ctx.lineTo(x2 - hl*Math.cos(angle+Math.PI/6), y2 - hl*Math.sin(angle+Math.PI/6));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+<span class="cm">// 圓角矩形 polyfill（舊版 Chrome 沒有 roundRect）</span>
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {
+    this.beginPath();
+    this.moveTo(x+r, y);
+    this.arcTo(x+w, y, x+w, y+h, r);
+    this.arcTo(x+w, y+h, x, y+h, r);
+    this.arcTo(x, y+h, x, y, r);
+    this.arcTo(x, y, x+w, y, r);
+    this.closePath();
+  };
+}</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">生活應用 Tab 動畫：切換時先取消舊 RAF</div>
+          <pre>var lifeAnimId = null;
+var lifeActive = 0;
+
+function showLife(i) {
+  lifeActive = i;
+  if (lifeAnimId) { cancelAnimationFrame(lifeAnimId); lifeAnimId = null; }
+  <span class="cm">// 更新 tab 樣式、標題、說明</span>
+  document.querySelectorAll('.life-tab-btn').forEach(function(b,j) {
+    b.classList.toggle('active', j===i);
+  });
+  <span class="cm">// 啟動對應動畫</span>
+  [anim0, anim1, anim2, anim3, anim4, anim5][i]();
+}
+
+function anim0() {
+  var idx = 0;
+  (function loop(t) {
+    if (lifeActive !== idx) return; <span class="cm">// 守衛：已切換就停止</span>
+    lifeAnimId = requestAnimationFrame(function() { loop(t+1); });
+    <span class="cm">// ... 繪製邏輯</span>
+  })(0);
+}</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">實驗 Canvas 標準元素</div>
+          <pre><span class="cm">// 虛線中心線（必加，幫學生判斷平衡位置）</span>
+ctx.setLineDash([6,4]);
+ctx.strokeStyle = '#cbd5e1';
+ctx.lineWidth = 1;
+ctx.beginPath();
+ctx.moveTo(CW/2, 8);
+ctx.lineTo(CW/2, CH-8);
+ctx.stroke();
+ctx.setLineDash([]);</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase" id="p5">
+    <div class="phase-header">
+      <div class="phase-num c5">5</div>
+      <div>
+        <div class="phase-title">版面配置規則</div>
+        <div class="phase-subtitle">三個常見版面的正確 CSS，避免捲軸與溢出問題</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">實驗：左控制 + 右 Canvas（flex）</div>
+          <pre>.exp-layout { display:flex; gap:16px; align-items:flex-start; }
+.exp-controls { flex:0 0 220px; min-width:160px; }
+.exp-canvas-wrap {
+  flex:1;
+  min-width:0; <span class="cm">/* 關鍵！沒有這行 Canvas 會撐破容器 */</span>
+}</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">生活應用：垂直 Tab 列不出現捲軸</div>
+          <pre>.life-layout {
+  display:flex;
+  height: clamp(340px, calc(100vh - 220px), 500px);
+  overflow:hidden;
+}
+.life-tab-list {
+  display:flex; flex-direction:column; gap:2px; padding:6px 5px;
+  min-width:90px; flex-shrink:0;
+  overflow:hidden; <span class="cm">/* 禁用 overflow-y:auto（會產生捲軸）*/</span>
+}
+.life-tab-btn {
+  flex:1; <span class="cm">/* 平均分配高度，6 個按鈕各佔 1/6 */</span>
+  min-height:0; <span class="cm">/* 允許縮小 */</span>
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}</pre>
+          <div class="callout danger">
+            <span class="callout-icon">🚫</span>
+            <span><strong>禁止用 <code>overflow-y:auto</code></strong> 在 Tab 列上，這會產生捲軸。正確做法是讓按鈕用 <code>flex:1</code> 自動縮小。</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">全站防水平捲軸</div>
+          <pre>body { overflow-x: hidden; }
+canvas { max-width: 100%; display: block; }
+.canvas-box { overflow: hidden; }</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase" id="p6">
+    <div class="phase-header">
+      <div class="phase-num c6">6</div>
+      <div>
+        <div class="phase-title">本地測試驗證</div>
+        <div class="phase-subtitle">每完成一個 section 就截圖確認，不等到最後才測</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">每次改動後強制重新整理</div>
+          <pre><span class="cm">// 在 Claude Code preview_eval 中執行</span>
+location.reload(true)</pre>
+          <div class="callout warn">
+            <span class="callout-icon">⚠️</span>
+            <span>瀏覽器預設會快取 HTML。若改了程式碼卻沒看到變化，<strong>一定要先強制重整</strong>，不要懷疑自己的程式碼。</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">每個 section 的驗證要點</div>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Section</th><th>驗證項目</th></tr>
+              <tr><td>觀察站</td><td>學習目標卡格數正確、Badge 顏色正確、詞彙可展開</td></tr>
+              <tr><td>互動實驗室</td><td>滑桿拖曳 Canvas 即時更新、中心線可見、結果框顯示</td></tr>
+              <tr><td>原理小教室</td><td>三個 Canvas 動畫都在跑、公式顯示正確</td></tr>
+              <tr><td>生活應用</td><td>6 個 Tab 全部可見（無捲軸）、切換動畫正確</td></tr>
+              <tr><td>挑戰測驗</td><td>答對/答錯回饋正確、分數計算正確</td></tr>
+              <tr><td>全站</td><td>無水平捲軸、頁面寬度正常</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div class="phase" id="p7">
+    <div class="phase-header">
+      <div class="phase-num" style="background:#0891b2;">7</div>
+      <div>
+        <div class="phase-title">部署到 GitHub Pages</div>
+        <div class="phase-subtitle">commit → push → 等待 1–3 分鐘 → 強制重整驗證</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">標準 commit 流程</div>
+          <pre>git add index.html
+git commit -m "feat: 說明本次改動（中文）"
+git push origin master</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Commit 訊息規範</div>
+          <div class="table-wrap">
+            <table>
+              <tr><th>前綴</th><th>用途</th><th>範例</th></tr>
+              <tr><td><code>feat:</code></td><td>新增功能</td><td>feat: 新增生活應用 Tab 動畫</td></tr>
+              <tr><td><code>fix:</code></td><td>修正問題</td><td>fix: 修正 Tab 列出現捲軸</td></tr>
+              <tr><td><code>style:</code></td><td>視覺調整</td><td>style: 調整原理卡片間距</td></tr>
+              <tr><td><code>content:</code></td><td>文字內容修改</td><td>content: 更新學習目標文字</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">GitHub Pages 設定（一次性）</div>
+          <div class="step-desc">Repository → Settings → Pages → Source: <strong>Deploy from branch</strong> → Branch: <code>master</code> / <code>(root)</code></div>
+          <div class="callout info">
+            <span class="callout-icon">⏱️</span>
+            <span>首次部署或大更新後，需等 <strong>1–3 分鐘</strong>。請用 <strong>Ctrl+Shift+R</strong>（Windows）或 <strong>Cmd+Shift+R</strong>（Mac）強制重整，確認是最新版本。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="phase" id="checklist">
+    <div class="phase-header">
+      <div class="phase-num" style="background:#475569;">✅</div>
+      <div>
+        <div class="phase-title">部署前驗收清單</div>
+        <div class="phase-subtitle">推上 GitHub 前的最終確認</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <ul class="checklist">
+        <li>Header 只有標題，沒有多餘副標或機構名稱</li>
+        <li>五個分頁 Tab 都可以切換，無錯誤</li>
+        <li>互動實驗室：滑桿拖曳即時更新 Canvas</li>
+        <li>實驗 Canvas 有垂直中心虛線</li>
+        <li>原理小教室：三個 Canvas 動畫正常運行</li>
+        <li>生活應用：6 個 Tab 全部可見，無捲軸</li>
+        <li>生活應用：切換 Tab 時動畫正確停止並重啟</li>
+        <li>挑戰測驗：答對/答錯回饋正確</li>
+        <li>頁面無水平捲軸（body 寬度正常）</li>
+        <li>在 375px 寬度（手機）下不爆版</li>
+        <li>所有 Canvas 動畫在頁面加載後自動啟動</li>
+        <li>index.html 已 commit 並 push 到 master</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Quick Patterns -->
+  <div class="phase" id="patterns">
+    <div class="phase-header">
+      <div class="phase-num" style="background:#f97316;">⚡</div>
+      <div>
+        <div class="phase-title">常見問題速查</div>
+        <div class="phase-subtitle">遇到問題時第一步就查這裡</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>現象</th>
+            <th>原因</th>
+            <th>解法</th>
+          </tr>
+          <tr>
+            <td>改了 HTML，預覽沒變化</td>
+            <td>瀏覽器快取</td>
+            <td><code>location.reload(true)</code></td>
+          </tr>
+          <tr>
+            <td>左側 Tab 列出現捲軸</td>
+            <td>Tab 按鈕高度固定</td>
+            <td>加 <code>flex:1; min-height:0</code> 到 <code>.life-tab-btn</code></td>
+          </tr>
+          <tr>
+            <td>Canvas 超出右側邊界</td>
+            <td>flex 容器沒有 <code>min-width:0</code></td>
+            <td>在 Canvas 的 flex 包裹容器加 <code>min-width:0</code></td>
+          </tr>
+          <tr>
+            <td>切換 Tab 時兩個動畫同時跑</td>
+            <td>沒取消舊的 RAF</td>
+            <td>切換前 <code>cancelAnimationFrame(lifeAnimId)</code></td>
+          </tr>
+          <tr>
+            <td>頁面有水平捲軸</td>
+            <td>某元素超出 body 寬度</td>
+            <td><code>body { overflow-x:hidden }</code> + 找出超出的元素</td>
+          </tr>
+          <tr>
+            <td>GitHub Pages 顯示舊版</td>
+            <td>CDN 快取延遲</td>
+            <td>等 1–3 分鐘，再 Ctrl+Shift+R</td>
+          </tr>
+          <tr>
+            <td>Canvas 動畫不動</td>
+            <td>元素 ID 打錯 / 動畫未啟動</td>
+            <td>確認 <code>document.getElementById('id')</code> 非 null，確認 INIT 段有呼叫</td>
+          </tr>
+          <tr>
+            <td><code>roundRect</code> 報錯</td>
+            <td>舊版瀏覽器不支援</td>
+            <td>加 polyfill（見 Phase 4 Step 2）</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  數位互動教材生成流程 SOP v1.0 ·
+  基於「力的大小」專案複盤整理 ·
+  2026
+</footer>
+
+</body>
+</html>

@@ -154,6 +154,33 @@
     }
     .obj-item .obj-icon { font-size: 2.2rem; display: block; margin-bottom: 6px; }
 
+    /* ── 觀察站：一頁不捲動 ── */
+    #sec-observe.active {
+      display: flex !important;
+      flex-direction: column;
+      height: calc(100vh - 115px);
+      overflow: hidden;
+      gap: 10px;
+      padding: 12px 20px;
+    }
+    #sec-observe .card { margin-bottom: 0; padding: 14px 18px; }
+    #sec-observe .card-title { font-size: 1.05rem; margin-bottom: 10px; }
+    #sec-observe .obs-top .obj-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    #sec-observe .obs-top .obj-item {
+      padding: 10px 8px;
+      font-size: 0.88rem;
+    }
+    #sec-observe .obs-bottom {
+      flex: 1;
+      display: flex;
+      gap: 10px;
+      min-height: 0;
+    }
+    #sec-observe .obs-bottom .card { flex: 1; overflow: hidden; }
+
     /* ── Vocab chips ── */
     .vocab-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .vocab-chip {
@@ -503,51 +530,54 @@
 <!-- ══════════════════════ 觀察站 ══════════════════════ -->
 <section id="sec-observe" class="section active">
 
-  <div class="card">
+  <!-- 上排：學習目標（4卡單排） -->
+  <div class="card obs-top">
     <div class="card-title">🎯 學習目標</div>
     <div class="obj-grid">
       <div class="obj-item">
-        <canvas id="objAnim1" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
+        <canvas id="objAnim1" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
         了解<strong>力的大小</strong>對物體移動方向的影響
       </div>
       <div class="obj-item">
-        <canvas id="objAnim2" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
+        <canvas id="objAnim2" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
         知道兩端力相等時物體不會移動（<strong>力的平衡</strong>）
       </div>
       <div class="obj-item">
-        <canvas id="objAnim3" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
+        <canvas id="objAnim3" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
         知道力不相等時，物體往<strong>較大力</strong>的方向移動
       </div>
       <div class="obj-item">
-        <canvas id="objAnim4" width="100" height="75" style="display:block;margin:0 auto 6px;max-width:100%;"></canvas>
+        <canvas id="objAnim4" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
         了解三個力的<strong>合力</strong>決定物體移動方向
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">🧰 實驗器材</div>
-    <div class="vocab-list">
-      <div class="vocab-chip">🌀 彈簧秤</div>
-      <div class="vocab-chip">📌 迴紋針（指針）</div>
-      <div class="vocab-chip">⭕ 金屬圓環</div>
-      <div class="vocab-chip">📐 360度量角器</div>
+  <!-- 下排：實驗器材 + 重要詞彙並排 -->
+  <div class="obs-bottom">
+    <div class="card">
+      <div class="card-title">🧰 實驗器材</div>
+      <div class="vocab-list">
+        <div class="vocab-chip">🌀 彈簧秤</div>
+        <div class="vocab-chip">📌 迴紋針（指針）</div>
+        <div class="vocab-chip">⭕ 金屬圓環</div>
+        <div class="vocab-chip">📐 360度量角器</div>
+      </div>
+      <div class="info-row mt12">
+        <span>💡</span>
+        <span>彈簧秤可以測量力的大小，單位為「克（g）」或「公克力（gf）」。</span>
+      </div>
     </div>
-    <div class="info-row mt12">
-      <span>💡</span>
-      <span>彈簧秤可以測量力的大小，單位為「克（g）」或「公克力（gf）」。</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">📝 重要詞彙</div>
-    <div class="vocab-list">
-      <div class="vocab-chip"><span class="badge badge-blue">力的大小</span></div>
-      <div class="vocab-chip"><span class="badge badge-green">力的平衡</span></div>
-      <div class="vocab-chip"><span class="badge badge-orange">合力</span></div>
-      <div class="vocab-chip"><span class="badge badge-blue">彈簧秤</span></div>
-      <div class="vocab-chip"><span class="badge badge-orange">靜止</span></div>
-      <div class="vocab-chip"><span class="badge badge-green">移動方向</span></div>
+    <div class="card">
+      <div class="card-title">📝 重要詞彙</div>
+      <div class="vocab-list">
+        <div class="vocab-chip"><span class="badge badge-blue">力的大小</span></div>
+        <div class="vocab-chip"><span class="badge badge-green">力的平衡</span></div>
+        <div class="vocab-chip"><span class="badge badge-orange">合力</span></div>
+        <div class="vocab-chip"><span class="badge badge-blue">彈簧秤</span></div>
+        <div class="vocab-chip"><span class="badge badge-orange">靜止</span></div>
+        <div class="vocab-chip"><span class="badge badge-green">移動方向</span></div>
+      </div>
     </div>
   </div>
 
