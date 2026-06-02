@@ -160,26 +160,33 @@
       flex-direction: column;
       height: calc(100vh - 115px);
       overflow: hidden;
-      gap: 10px;
-      padding: 12px 20px;
+      gap: 14px;
+      padding: 16px 28px;
     }
-    #sec-observe .card { margin-bottom: 0; padding: 14px 18px; }
-    #sec-observe .card-title { font-size: 1.05rem; margin-bottom: 10px; }
+    #sec-observe .card { margin-bottom: 0; padding: 18px 24px; }
+    #sec-observe .card-title { font-size: 1.25rem; margin-bottom: 14px; }
+    #sec-observe .obs-top {
+      flex-shrink: 0;
+    }
     #sec-observe .obs-top .obj-grid {
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 12px;
     }
     #sec-observe .obs-top .obj-item {
-      padding: 10px 8px;
-      font-size: 0.88rem;
+      padding: 16px 10px;
+      font-size: 1rem;
     }
     #sec-observe .obs-bottom {
       flex: 1;
       display: flex;
-      gap: 10px;
+      gap: 14px;
       min-height: 0;
     }
     #sec-observe .obs-bottom .card { flex: 1; overflow: hidden; }
+    #sec-observe .obs-bottom .vocab-list { gap: 10px; margin-top: 10px; }
+    #sec-observe .obs-bottom .vocab-chip { font-size: 1rem; padding: 8px 16px; }
+    #sec-observe .obs-bottom .badge { font-size: 1rem; padding: 6px 16px; }
+    #sec-observe .obs-bottom .info-row { font-size: 0.95rem; margin-top: 16px; }
 
     /* ── Vocab chips ── */
     .vocab-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -535,19 +542,19 @@
     <div class="card-title">🎯 學習目標</div>
     <div class="obj-grid">
       <div class="obj-item">
-        <canvas id="objAnim1" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
+        <canvas id="objAnim1" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
         了解<strong>力的大小</strong>對物體移動方向的影響
       </div>
       <div class="obj-item">
-        <canvas id="objAnim2" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
+        <canvas id="objAnim2" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
         知道兩端力相等時物體不會移動（<strong>力的平衡</strong>）
       </div>
       <div class="obj-item">
-        <canvas id="objAnim3" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
+        <canvas id="objAnim3" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
         知道力不相等時，物體往<strong>較大力</strong>的方向移動
       </div>
       <div class="obj-item">
-        <canvas id="objAnim4" width="100" height="65" style="display:block;margin:0 auto 5px;max-width:100%;"></canvas>
+        <canvas id="objAnim4" width="130" height="80" style="display:block;margin:0 auto 8px;max-width:100%;"></canvas>
         了解三個力的<strong>合力</strong>決定物體移動方向
       </div>
     </div>
