@@ -1875,10 +1875,10 @@ function resetQuiz() {
       const bx = ph < 75 ? W/2 - (ph/75)*70 : W/2 - 70*(1-(ph-75)/35);
       ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(20, cy+18); ctx.lineTo(W-20, cy+18); ctx.stroke();
-      // F₁ 大：長箭頭，從左邊指向球
-      parw(ctx, bx - 110, cy, bx - 15, cy, '#3b82f6', 3.5);
-      // F₂ 小：短箭頭，從右邊指向球
-      parw(ctx, bx + 58, cy, bx + 15, cy, '#ef4444', 2.5);
+      // F₁ 大：長箭頭，從球往左拉
+      parw(ctx, bx - 15, cy, bx - 110, cy, '#3b82f6', 3.5);
+      // F₂ 小：短箭頭，從球往右拉
+      parw(ctx, bx + 15, cy, bx + 58, cy, '#ef4444', 2.5);
       ctx.textAlign='center'; ctx.font='bold 11px Microsoft JhengHei,sans-serif';
       ctx.fillStyle='#1d4ed8'; ctx.fillText('F₁（大）', bx - 63, cy - 13);
       ctx.fillStyle='#b91c1c'; ctx.fillText('F₂（小）', bx + 36, cy - 13);
