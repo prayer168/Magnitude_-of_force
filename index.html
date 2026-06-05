@@ -781,7 +781,7 @@
         <li>若合力 ≠ 0，物體往<strong>合力方向</strong>移動</li>
         <li>三力均等且角度間隔 120°，合力 = 0 → 平衡</li>
       </ul>
-      <canvas id="pAnim3" class="p-canvas" width="600" height="160"></canvas>
+      <canvas id="pAnim3" class="p-canvas" width="600" height="180"></canvas>
     </div>
   </div>
 
@@ -1861,7 +1861,7 @@ function resetQuiz() {
     })();
   })();
 
-  // pAnim2: 力不相等 — ball slides toward bigger force (right)
+  // pAnim2: 力不相等 — F₁(大,左) > F₂(小,右)，球往左（F₁方向）移動
   (function() {
     const c = document.getElementById('pAnim2'); if (!c) return;
     const ctx = c.getContext('2d'), W = c.width, H = c.height;
@@ -1871,56 +1871,74 @@ function resetQuiz() {
       ctx.clearRect(0,0,W,H);
       ctx.fillStyle='#fff7ed'; ctx.fillRect(0,0,W,H);
       const ph = f % 110;
-      const bx = ph < 75 ? W/2 + (ph/75)*70 : W/2 + 70*(1-(ph-75)/35);
+      // 球往左移動（朝 F₁ 方向）
+      const bx = ph < 75 ? W/2 - (ph/75)*70 : W/2 - 70*(1-(ph-75)/35);
       ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(20, cy+18); ctx.lineTo(W-20, cy+18); ctx.stroke();
-      parw(ctx, bx - 58, cy, bx - 15, cy, '#3b82f6', 2.5);
-      parw(ctx, bx + 110, cy, bx + 15, cy, '#ef4444', 3.5);
+      // F₁ 大：長箭頭，從左邊指向球
+      parw(ctx, bx - 110, cy, bx - 15, cy, '#3b82f6', 3.5);
+      // F₂ 小：短箭頭，從右邊指向球
+      parw(ctx, bx + 58, cy, bx + 15, cy, '#ef4444', 2.5);
       ctx.textAlign='center'; ctx.font='bold 11px Microsoft JhengHei,sans-serif';
-      ctx.fillStyle='#1d4ed8'; ctx.fillText('F₁（小）', bx - 36, cy - 13);
-      ctx.fillStyle='#b91c1c'; ctx.fillText('F₂（大）', bx + 63, cy - 13);
+      ctx.fillStyle='#1d4ed8'; ctx.fillText('F₁（大）', bx - 63, cy - 13);
+      ctx.fillStyle='#b91c1c'; ctx.fillText('F₂（小）', bx + 36, cy - 13);
       pball(ctx, bx, cy, 13, '#f97316');
       ctx.fillStyle='white'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
       ctx.fillText('物', bx, cy+4);
       ctx.fillStyle='#f97316'; ctx.font='bold 13px Microsoft JhengHei,sans-serif';
-      ctx.textAlign='center'; ctx.fillText('→ 往 F₂ 方向移動', W/2, cy + 33);
+      ctx.textAlign='center'; ctx.fillText('← 往 F₁ 方向移動', W/2, cy + 33);
       f++; requestAnimationFrame(loop);
     })();
   })();
 
-  // pAnim3: 三個力合力 — 3 arrows + resultant
+  // pAnim3: 三個力合力 — 兩段式動畫
+  // Phase 1 (80f): 三力等大120°間隔 → 合力=0 → 平衡
+  // Phase 2 (80f): F₁ 變大 → 合力≠0 → 往合力方向移動
   (function() {
     const c = document.getElementById('pAnim3'); if (!c) return;
     const ctx = c.getContext('2d'), W = c.width, H = c.height;
-    const cx = W/2, cy = H/2 + 10;
+    const cx = W/2, cy = H/2 + 4;
     const COLS = ['#3b82f6','#16a34a','#ef4444'];
     const LBLS = ['F₁','F₂','F₃'];
     const ANGS = [0, 2.094, 4.189]; // 0°, 120°, 240°
+    const BASE = 58;
     let f = 0;
     (function loop() {
       ctx.clearRect(0,0,W,H);
       ctx.fillStyle='#f0fdf4'; ctx.fillRect(0,0,W,H);
-      const lens = [60 + 20*Math.sin(f*Math.PI/70), 60, 60];
+      const ph = f % 160;
+      // Phase 1: 三力等大; Phase 2: F₁ 慢慢變大再縮回
+      const lens = ph < 80
+        ? [BASE, BASE, BASE]
+        : [BASE + 36*Math.sin((ph-80)/80*Math.PI), BASE, BASE];
       let rx=0, ry=0;
       ANGS.forEach((a,i) => {
         const ex=cx+Math.cos(a)*lens[i], ey=cy+Math.sin(a)*lens[i];
         parw(ctx, cx, cy, ex, ey, COLS[i], 3);
         ctx.fillStyle=COLS[i]; ctx.font='bold 12px Microsoft JhengHei,sans-serif';
         ctx.textAlign='center';
-        ctx.fillText(LBLS[i], cx+Math.cos(a)*(lens[i]+14), cy+Math.sin(a)*(lens[i]+14));
+        ctx.fillText(LBLS[i], cx+Math.cos(a)*(lens[i]+16), cy+Math.sin(a)*(lens[i]+16));
         rx+=Math.cos(a)*lens[i]; ry+=Math.sin(a)*lens[i];
       });
       const mag = Math.hypot(rx,ry);
-      if (mag > 3) {
+      ctx.font='bold 13px Microsoft JhengHei,sans-serif';
+      ctx.textAlign='center';
+      if (mag > 6) {
+        // 有合力：畫合力箭頭
         parw(ctx, cx, cy, cx+rx, cy+ry, '#7c3aed', 4);
-        ctx.fillStyle='#7c3aed'; ctx.font='bold 12px Microsoft JhengHei,sans-serif';
-        ctx.textAlign='left'; ctx.fillText('合力', cx+rx+6, cy+ry+4);
+        ctx.fillStyle='#7c3aed';
+        ctx.fillText('合力', cx+rx+18, cy+ry+4);
+        ctx.fillStyle='#7c3aed';
+        ctx.fillText('合力≠0 → 往合力方向移動', cx, cy - 80);
       } else {
-        ctx.fillStyle='#16a34a'; ctx.font='bold 13px Microsoft JhengHei,sans-serif';
-        ctx.textAlign='center'; ctx.fillText('合力≈0 → 平衡', cx, cy - 78);
+        ctx.fillStyle='#16a34a';
+        ctx.fillText('三力等大、間隔120° → 合力=0 → 平衡', cx, cy - 80);
       }
-      pball(ctx, cx, cy, 6, '#fff');
-      ctx.strokeStyle='#1e293b'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,cy,6,0,6.283); ctx.stroke();
+      // 中心圓點
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(cx,cy,7,0,6.283); ctx.fill();
+      ctx.strokeStyle='#1e293b'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(cx,cy,7,0,6.283); ctx.stroke();
       f++; requestAnimationFrame(loop);
     })();
   })();
