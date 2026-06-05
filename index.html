@@ -1891,40 +1891,42 @@ function resetQuiz() {
     })();
   })();
 
-  // pAnim3: 三個力合力 — 三力等大同步旋轉，合力始終=0 → 平衡
+  // pAnim3: 三個力往外拉，固定方向，等大脈動，合力=0 → 平衡
   (function() {
     const c = document.getElementById('pAnim3'); if (!c) return;
     const ctx = c.getContext('2d'), W = c.width, H = c.height;
-    const cx = W/2, cy = H/2 + 4;
+    const cx = W/2, cy = H/2 + 8;
     const COLS = ['#3b82f6','#ef4444','#16a34a'];
     const LBLS = ['F₁','F₂','F₃'];
-    const BASE_ANGS = [0, 2.094, 4.189]; // 各差 120°
-    const LEN = 65;
+    // 固定角度：右、左下、左上（canvas y 向下）
+    const ANGS = [0, 2.094, 4.189]; // 0°, 120°, 240°
     let f = 0;
     (function loop() {
       ctx.clearRect(0,0,W,H);
       ctx.fillStyle='#f0fdf4'; ctx.fillRect(0,0,W,H);
-      const rot = f * 0.018; // 緩慢同步旋轉
-      BASE_ANGS.forEach((baseA, i) => {
-        const a = baseA + rot;
-        const ex = cx + Math.cos(a)*LEN;
-        const ey = cy + Math.sin(a)*LEN;
-        parw(ctx, cx, cy, ex, ey, COLS[i], 3);
+      // 三力等大脈動（同步呼吸感）
+      const len = 58 + 10 * Math.sin(f * 0.055);
+      ANGS.forEach((a, i) => {
+        const ex = cx + Math.cos(a) * len;
+        const ey = cy + Math.sin(a) * len;
+        parw(ctx, cx, cy, ex, ey, COLS[i], 3.5);
         ctx.fillStyle = COLS[i];
         ctx.font = 'bold 12px Microsoft JhengHei,sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(LBLS[i], cx + Math.cos(a)*(LEN+16), cy + Math.sin(a)*(LEN+16));
+        ctx.fillText(LBLS[i], cx + Math.cos(a)*(len + 16), cy + Math.sin(a)*(len + 16));
       });
-      // 標題：三力等大旋轉合力恆=0
+      // 平衡說明
       ctx.fillStyle = '#16a34a';
       ctx.font = 'bold 13px Microsoft JhengHei,sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('三力等大、間隔120° → 合力=0 → 平衡', cx, cy - 82);
-      // 中心圓點
+      // 中心圓（物體靜止不動）
       ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 6.283); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 6.283); ctx.fill();
       ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 6.283); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 6.283); ctx.stroke();
+      ctx.fillStyle = '#1e293b'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('靜', cx, cy + 3);
       f++; requestAnimationFrame(loop);
     })();
   })();
