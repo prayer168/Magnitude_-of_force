@@ -1891,54 +1891,40 @@ function resetQuiz() {
     })();
   })();
 
-  // pAnim3: 三個力合力 — 兩段式動畫
-  // Phase 1 (80f): 三力等大120°間隔 → 合力=0 → 平衡
-  // Phase 2 (80f): F₁ 變大 → 合力≠0 → 往合力方向移動
+  // pAnim3: 三個力合力 — 三力等大同步旋轉，合力始終=0 → 平衡
   (function() {
     const c = document.getElementById('pAnim3'); if (!c) return;
     const ctx = c.getContext('2d'), W = c.width, H = c.height;
     const cx = W/2, cy = H/2 + 4;
-    const COLS = ['#3b82f6','#16a34a','#ef4444'];
+    const COLS = ['#3b82f6','#ef4444','#16a34a'];
     const LBLS = ['F₁','F₂','F₃'];
-    const ANGS = [0, 2.094, 4.189]; // 0°, 120°, 240°
-    const BASE = 58;
+    const BASE_ANGS = [0, 2.094, 4.189]; // 各差 120°
+    const LEN = 65;
     let f = 0;
     (function loop() {
       ctx.clearRect(0,0,W,H);
       ctx.fillStyle='#f0fdf4'; ctx.fillRect(0,0,W,H);
-      const ph = f % 160;
-      // Phase 1: 三力等大; Phase 2: F₁ 慢慢變大再縮回
-      const lens = ph < 80
-        ? [BASE, BASE, BASE]
-        : [BASE + 36*Math.sin((ph-80)/80*Math.PI), BASE, BASE];
-      let rx=0, ry=0;
-      ANGS.forEach((a,i) => {
-        const ex=cx+Math.cos(a)*lens[i], ey=cy+Math.sin(a)*lens[i];
+      const rot = f * 0.018; // 緩慢同步旋轉
+      BASE_ANGS.forEach((baseA, i) => {
+        const a = baseA + rot;
+        const ex = cx + Math.cos(a)*LEN;
+        const ey = cy + Math.sin(a)*LEN;
         parw(ctx, cx, cy, ex, ey, COLS[i], 3);
-        ctx.fillStyle=COLS[i]; ctx.font='bold 12px Microsoft JhengHei,sans-serif';
-        ctx.textAlign='center';
-        ctx.fillText(LBLS[i], cx+Math.cos(a)*(lens[i]+16), cy+Math.sin(a)*(lens[i]+16));
-        rx+=Math.cos(a)*lens[i]; ry+=Math.sin(a)*lens[i];
+        ctx.fillStyle = COLS[i];
+        ctx.font = 'bold 12px Microsoft JhengHei,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(LBLS[i], cx + Math.cos(a)*(LEN+16), cy + Math.sin(a)*(LEN+16));
       });
-      const mag = Math.hypot(rx,ry);
-      ctx.font='bold 13px Microsoft JhengHei,sans-serif';
-      ctx.textAlign='center';
-      if (mag > 6) {
-        // 有合力：畫合力箭頭
-        parw(ctx, cx, cy, cx+rx, cy+ry, '#7c3aed', 4);
-        ctx.fillStyle='#7c3aed';
-        ctx.fillText('合力', cx+rx+18, cy+ry+4);
-        ctx.fillStyle='#7c3aed';
-        ctx.fillText('合力≠0 → 往合力方向移動', cx, cy - 80);
-      } else {
-        ctx.fillStyle='#16a34a';
-        ctx.fillText('三力等大、間隔120° → 合力=0 → 平衡', cx, cy - 80);
-      }
+      // 標題：三力等大旋轉合力恆=0
+      ctx.fillStyle = '#16a34a';
+      ctx.font = 'bold 13px Microsoft JhengHei,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('三力等大、間隔120° → 合力=0 → 平衡', cx, cy - 82);
       // 中心圓點
-      ctx.fillStyle='#fff';
-      ctx.beginPath(); ctx.arc(cx,cy,7,0,6.283); ctx.fill();
-      ctx.strokeStyle='#1e293b'; ctx.lineWidth=2;
-      ctx.beginPath(); ctx.arc(cx,cy,7,0,6.283); ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 6.283); ctx.fill();
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 6.283); ctx.stroke();
       f++; requestAnimationFrame(loop);
     })();
   })();
